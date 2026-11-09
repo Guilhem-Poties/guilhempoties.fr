@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+
+<Base title="Mentions légales" description="Mentions légales et politique de confidentialité de guilhempoties.fr.">
+  <section class="container wrap">
+    <p class="eyebrow mono">Informations</p>
+    <h1>Mentions légales</h1>
+    <div class="prose">
+      <h2>Éditeur</h2>
+      <p>
+        Ce site est le portfolio personnel de {site.name}. Contact :
+        <a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+
+      <h2>Hébergement</h2>
+      {
+        site.hosting ? (
+          <p>
+            {site.hosting.name} — {site.hosting.address}
+            {site.hosting.phone && <> — {site.hosting.phone}</>}
+          </p>
+        ) : (
+          <p>Informations sur l'hébergeur disponibles sur demande à l'adresse ci-dessus.</p>
+        )
+      }
+
+      <h2>Données personnelles et cookies</h2>
+      <p>
+        Ce site ne dépose aucun cookie, n'utilise aucun outil de mesure d'audience et ne collecte aucune donnée
+        personnelle. Le choix du thème clair ou sombre est mémorisé uniquement dans votre navigateur.
+      </p>
+      <p>
+        Les vidéos sont hébergées sur YouTube. Seule leur miniature est chargée par défaut ; le lecteur (en mode
+        « confidentialité renforcée », youtube-nocookie.com) n'est chargé que lorsque vous cliquez sur une vidéo. YouTube
+        peut alors collecter des données conformément à sa propre politique de confidentialité.
+      </p>
+
+      <h2>Propriété intellectuelle</h2>
+      <p>
+        Sauf mention contraire, les textes, images et vidéos présentés sur ce site sont la propriété de {site.name} ou de
+        leurs co-auteurs respectifs. Toute reproduction sans autorisation est interdite.
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .wrap {
+    padding-block: clamp(3rem, 8vw, 6rem);
+  }
+  h1 {
+    font-size: clamp(2.4rem, 1.4rem + 4vw, 4.5rem);
+    letter-spacing: -0.04em;
+    margin-bottom: 1rem;
+  }
+</style>

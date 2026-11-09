@@ -1,0 +1,128 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/projets/', label: 'Créations', match: '/projets' },
+  { href: '/cv/', label: 'Parcours', match: '/cv' },
+  { href: '/#contact', label: 'Contact', match: null },
+];
+---
+
+<header class="site-header" transition:persist>
+  <div class="container bar">
+    <a href="/" class="brand" aria-label="Guilhem Poties — accueil">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="brand-name">Guilhem Poties</span>
+    </a>
+    <nav aria-label="Navigation principale">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={item.match && path.startsWith(item.match) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</header>
+
+<script>
+  // Mark current nav item after client-side navigations (header is persisted).
+  document.addEventListener('astro:page-load', () => {
+    const path = location.pathname;
+    document.querySelectorAll<HTMLAnchorElement>('.site-header nav a').forEach((a) => {
+      const base = a.getAttribute('href') ?? '';
+      const active = !base.includes('#') && path.startsWith(base.replace(/\/$/, ''));
+      if (active) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 4rem;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .brand:hover {
+    color: inherit;
+  }
+  .dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.4s var(--ease);
+  }
+  .brand:hover .dot {
+    transform: scale(1.5);
+  }
+  nav ul {
+    display: flex;
+    gap: clamp(0.25rem, 2vw, 1.5rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--text);
+  }
+  nav a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    left: 0.4rem;
+    right: 0.4rem;
+    bottom: 0.2rem;
+    height: 1px;
+    background: var(--accent);
+  }
+  @media (max-width: 30rem) {
+    .brand-name {
+      display: none;
+    }
+    .brand {
+      margin-right: auto;
+    }
+  }
+</style>

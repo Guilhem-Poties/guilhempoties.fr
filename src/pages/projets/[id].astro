@@ -1,0 +1,259 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import YouTube from '../../components/YouTube.astro';
+import Gallery from '../../components/Gallery.astro';
+import DisciplineIcon from '../../components/DisciplineIcon.astro';
+import { getProjects, disciplineLabel, yearLabel, type Project } from '../../lib/projects';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { id: project.id },
+    props: {
+      project,
+      newer: projects[i - 1] ?? null,
+      older: projects[i + 1] ?? null,
+    },
+  }));
+}
+
+interface Props {
+  project: Project;
+  newer: Project | null;
+  older: Project | null;
+}
+const { project, newer, older } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const hasBody = Boolean(project.body?.trim());
+// A series of videos reads better with its introduction first; a single film opens the page.
+const textFirst = data.videos.length > 1;
+const showGallery = data.gallery.length > 0;
+const facts = [
+  data.role && { k: 'Rôle', v: data.role },
+  data.context && { k: 'Contexte', v: data.context },
+  data.tools.length > 0 && { k: 'Outils', v: data.tools.join(', ') },
+  { k: 'Année', v: yearLabel(project) },
+].filter(Boolean) as { k: string; v: string }[];
+---
+
+<Base title={data.title} description={data.summary} image={data.cover ?? data.gallery[0]?.src} type="article">
+  <article>
+    <header class="container head">
+      <a class="back mono" href="/projets/">← Toutes les créations</a>
+      <div class="tags">
+        {
+          data.disciplines.map((d) => (
+            <a class="chip" href={`/projets/?d=${d}`}>
+              <DisciplineIcon discipline={d} size={16} />
+              {disciplineLabel(d)}
+            </a>
+          ))
+        }
+      </div>
+      <h1 class="title">{data.title}</h1>
+      <p class="lead">{data.summary}</p>
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt class="mono muted">{f.k}</dt>
+              <dd>{f.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </header>
+
+    {
+      hasBody && textFirst && (
+        <section class="container body">
+          <div class="prose">
+            <Content />
+          </div>
+        </section>
+      )
+    }
+    {
+      data.videos.length > 0 && (
+        <section class="container videos" aria-label="Vidéos" transition:name={`media-${project.id}`}>
+          <div class:list={['video-grid', { multi: data.videos.length > 1 }]}>
+            {data.videos.map((v, i) => (
+              <figure class:list={['video', { first: i === 0 }]}>
+                <YouTube id={v.id} title={v.title ?? data.title} />
+                {(v.title || v.note) && data.videos.length > 1 && (
+                  <figcaption>
+                    {v.title && <strong>{v.title}</strong>}
+                    {v.note && <p class="muted">{v.note}</p>}
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+
+    {
+      hasBody && !textFirst && (
+        <section class="container body">
+          <div class="prose">
+            <Content />
+          </div>
+        </section>
+      )
+    }
+    {
+      showGallery && (
+        <section class="container gallery-wrap" aria-label="Galerie">
+          <Gallery images={data.gallery} fit={data.galleryFit} />
+        </section>
+      )
+    }
+
+    {
+      data.links.length > 0 && (
+        <section class="container links">
+          {data.links.map((l) => (
+            <a class="btn btn-primary" href={l.href} target="_blank" rel="noopener">
+              {l.label} <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </section>
+      )
+    }
+  </article>
+
+  <nav class="container pager" aria-label="Autres projets">
+    {
+      older ? (
+        <a href={`/projets/${older.id}/`} class="prev">
+          <span class="mono muted">← Précédent · {yearLabel(older)}</span>
+          <span class="p-title">{older.data.title}</span>
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      newer && (
+        <a href={`/projets/${newer.id}/`} class="next">
+          <span class="mono muted">Suivant · {yearLabel(newer)} →</span>
+          <span class="p-title">{newer.data.title}</span>
+        </a>
+      )
+    }
+  </nav>
+</Base>
+
+<style>
+  .head {
+    padding-top: clamp(2rem, 5vw, 4rem);
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .back {
+    display: inline-block;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 2rem;
+  }
+  .back:hover {
+    color: var(--text);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .tags .chip {
+    text-decoration: none;
+  }
+  .tags .chip:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+  }
+  .title {
+    font-size: clamp(2.6rem, 1.2rem + 6vw, 7rem);
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+  }
+  .lead {
+    margin-top: 1.5rem;
+    max-width: 44ch;
+    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 1.25rem 2rem;
+    margin: 2.5rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .facts dd {
+    margin: 0.35rem 0 0;
+  }
+  .videos {
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .video-grid.multi {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+    gap: 2rem 1.5rem;
+  }
+  .video-grid:not(.multi) {
+    max-width: 1100px;
+  }
+  .video {
+    margin: 0;
+  }
+  .video figcaption {
+    margin-top: 0.85rem;
+    display: grid;
+    gap: 0.3rem;
+  }
+  .video figcaption p {
+    font-size: 0.93rem;
+  }
+  .body {
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .gallery-wrap {
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .pager a {
+    display: grid;
+    gap: 0.4rem;
+    text-decoration: none;
+  }
+  .pager .next {
+    text-align: right;
+  }
+  .p-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 1rem + 1vw, 1.9rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .pager a:hover .p-title {
+    color: var(--accent-ink);
+  }
+</style>

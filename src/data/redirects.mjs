@@ -1,0 +1,53 @@
+// Old WordPress URLs → new URLs. Used both by Astro (meta-refresh pages, works on any static host)
+// and to generate a real 301 `.htaccess` for the Apache host. See astro.config.mjs.
+const p = (slug) => `/projets/${slug}/`;
+
+export const redirects = {
+  // Pages & archives
+  '/sujets/mes-creations': '/projets/',
+  '/politique-de-confidentialite': '/mentions-legales/',
+  '/files/CV_Guilhem_POTIES': '/files/CV-Guilhem-POTIES.pdf',
+
+  // Former posts (WordPress permalinks)
+  '/mes-creations/musique/soiree-olympes': p('dj'),
+  '/mes-creations/musique/winter-night': p('dj'),
+  '/mes-creations/forgotten': p('forgotten'),
+  '/mes-creations/la-flamme': p('la-flamme'),
+  '/mes-creations/videos/derniere-danse': p('derniere-danse'),
+  '/mes-creations/shadows': p('shadows'),
+  '/mes-creations/il-suffit-dun-regard': p('il-suffit-dun-regard'),
+  '/mes-creations/traitement-dimage': p('traitement-d-image'),
+  '/mes-creations/realisation-de-lapplication-web-trocali': p('trocali'),
+  '/mes-creations/affiche-pour-trocali': p('trocali'),
+  '/mes-creations/logo': p('trocali'),
+  '/mes-creations/creation-dicones': p('icones'),
+  '/mes-creations/affiche-pour-apero-de-bde': p('affiches'),
+  '/mes-creations/affiche-sur-le-metier-de-developpeur': p('affiches'),
+  '/mes-creations/design-dune-affiche-de-candidature-pour-bde': p('affiches'),
+  '/mes-creations/teaser-de-la-saison-ete-2021-de-bidart': p('place-aux-artistes'),
+  '/mes-creations/teaser-de-la-saison-3-de-place-aux-artistes-a-bidart-2': p('place-aux-artistes'),
+  '/mes-creations/teaser-de-la-saison-3-de-place-aux-artistes-a-bidart': p('place-aux-artistes'),
+  '/mes-creations/restitution-de-linventaire-du-patrimoine-bati': p('patrimoine-bati-bidart'),
+  '/mes-creations/le-jardin-partage': p('reportages-anglet'),
+  '/mes-creations/fin-de-la-5eme-promotion-du-service-civique': p('reportages-anglet'),
+  '/mes-creations/une-empreinte-de-surfeur': p('reportages-anglet'),
+  '/mes-creations/dispositif-estival-2019': p('reportages-anglet'),
+  '/mes-creations/amv-legends-never-die-anime-mix': p('amv-legends-never-die'),
+  '/mes-creations/zoro-evolution': p('zoro-evolution'),
+  '/mes-creations/erased-op-x-domestic-girlfriend-op': p('anime-shambles'),
+  '/mes-creations/one-punch-man-op1-x-chainsaw-man-op1': p('anime-shambles'),
+  '/mes-creations/overlord-op1-x-black-clover-op10': p('anime-shambles'),
+  '/mes-creations/demon-slayer-op1-x-black-clover-op3': p('anime-shambles'),
+  '/mes-creations/attack-on-titan-op7-x-vinland-saga-op1': p('anime-shambles'),
+  '/mes-creations/sword-art-online-ii-op1-x-fma-brotherhood-op1': p('anime-shambles'),
+  '/mes-creations/tokyo-ghoul-op1-x-attack-on-titan-op7': p('anime-shambles'),
+  '/mes-creations/full-metal-alchemist-brotherhood-op1-x-fate-stay-night-op2': p('anime-shambles'),
+  '/mes-creations/demon-slayer-op2-x-demon-slayer-op3': p('anime-shambles'),
+  '/mes-creations/demon-slayer-op3-x-noragami-op2': p('anime-shambles'),
+  '/mes-creations/simple-school-life': p('simple-school-life'),
+  '/mes-creations/manga': p('manga'),
+  '/mes-creations/depouvus': p('depourvus'),
+  '/mes-creations/deambule-moi': p('deambule-moi'),
+  '/mes-creations/dolye-et-le-fil-dor': p('dolye-et-le-fil-d-or'),
+  '/mes-creations/comedie-musicale': p('comedie-musicale'),
+};

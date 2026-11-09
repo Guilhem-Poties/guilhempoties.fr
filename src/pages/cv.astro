@@ -1,0 +1,220 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+import { intro, experiences, education, skills, softSkills, interests, languages } from '../data/cv';
+---
+
+<Base title="Parcours" description="Parcours, expériences, formation et compétences de Guilhem Poties, étudiant ingénieur IMAC.">
+  <section class="container head">
+    <p class="eyebrow mono">Parcours</p>
+    <h1 class="title">Ingénieur créatif</h1>
+    <div class="intro">
+      {intro.map((t) => <p>{t}</p>)}
+    </div>
+    <a class="btn btn-primary" href={site.cv} download>
+      Télécharger mon CV (PDF)
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v9M4 7l4 4 4-4M3 14h10" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+    </a>
+  </section>
+
+  <div class="container cv">
+    <section class="block">
+      <h2 class="mono muted">Expériences</h2>
+      <ol class="entries">
+        {
+          experiences.map((e) => (
+            <li>
+              <p class="mono muted period">{e.period}</p>
+              <div>
+                <h3>{e.href ? <a href={e.href}>{e.title}</a> : e.title}</h3>
+                <p class="org">{e.org}</p>
+                <p class="text">{e.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="block">
+      <h2 class="mono muted">Formation</h2>
+      <ol class="entries">
+        {
+          education.map((e) => (
+            <li>
+              <p class="mono muted period">{e.period}</p>
+              <div>
+                <h3>{e.title}</h3>
+                <p class="org">{e.org}</p>
+                {e.detail && <p class="text">{e.detail}</p>}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="block">
+      <h2 class="mono muted">Compétences</h2>
+      <div class="skills">
+        {
+          skills.map((s) => (
+            <div>
+              <h3>{s.title}</h3>
+              <ul class="chips">
+                {s.items.map((i) => (
+                  <li class="chip">{i}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+        <div>
+          <h3>Savoir-être</h3>
+          <ul class="chips">{softSkills.map((i) => <li class="chip">{i}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block two">
+      <div>
+        <h2 class="mono muted">Centres d'intérêt</h2>
+        <ul class="plain">
+          {
+            interests.map((i) => (
+              <li>
+                <h3>{i.title}</h3>
+                <p class="text">{i.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h2 class="mono muted">Langues</h2>
+        <ul class="plain langs">
+          {
+            languages.map((l) => (
+              <li>
+                <h3>{l.title}</h3>
+                <p class="mono muted">{l.level}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .head {
+    padding-top: clamp(3rem, 8vw, 6rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .title {
+    font-size: clamp(2.6rem, 1.2rem + 6vw, 7rem);
+    letter-spacing: -0.05em;
+  }
+  .intro {
+    display: grid;
+    gap: 1rem;
+    max-width: 60ch;
+    margin: 1.75rem 0 2rem;
+    font-size: 1.15rem;
+    color: var(--muted);
+  }
+  .intro p:first-child {
+    color: var(--text);
+  }
+  .cv {
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+  .block {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 1.5rem 2rem;
+    padding-block: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+  .block.two {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+  .block.two h2 {
+    margin-bottom: 1.5rem;
+  }
+  .block h2 {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+  h3 {
+    font-size: 1.2rem;
+  }
+  h3 a {
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .entries,
+  .plain {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+  }
+  .entries li {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 0.25rem 1.5rem;
+  }
+  .period {
+    padding-top: 0.25rem;
+  }
+  .org {
+    margin-top: 0.2rem;
+    font-size: 0.95rem;
+  }
+  .text {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    max-width: 62ch;
+  }
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 2rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    list-style: none;
+    margin: 0.85rem 0 0;
+    padding: 0;
+  }
+  .plain {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  }
+  .langs {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .langs li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 760px) {
+    .block,
+    .block.two {
+      grid-template-columns: 1fr;
+    }
+    .entries li {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

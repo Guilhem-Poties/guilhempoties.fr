@@ -1,0 +1,182 @@
+---
+// Image grid with an accessible <dialog> lightbox (arrow keys, Esc, swipe-free buttons).
+import { Image, getImage } from 'astro:assets';
+
+interface Props {
+  images: { src: ImageMetadata; alt: string }[];
+  fit?: 'cover' | 'contain';
+}
+const { images, fit = 'cover' } = Astro.props;
+const full = await Promise.all(images.map((i) => getImage({ src: i.src, width: Math.min(i.src.width, 2000) })));
+const single = images.length === 1;
+---
+
+<div class:list={['gallery', fit, { single }]} data-gallery>
+  {
+    images.map((img, i) => (
+      <a
+        href={full[i].src}
+        class="item"
+        data-index={i}
+        data-full={full[i].src}
+        data-alt={img.alt}
+        style={single ? undefined : `--ar:${img.src.width}/${img.src.height}`}
+      >
+        <Image
+          src={img.src}
+          alt={img.alt}
+          widths={[400, 700, 1000, 1400]}
+          sizes={single ? '(max-width: 900px) 100vw, 900px' : '(max-width: 700px) 50vw, 33vw'}
+          loading="lazy"
+        />
+      </a>
+    ))
+  }
+  <dialog class="lightbox" aria-label="Visionneuse d'images">
+    <img alt="" />
+    <p class="caption mono"></p>
+    <button class="lb-btn close" type="button" aria-label="Fermer">✕</button>
+    {
+      !single && (
+        <>
+          <button class="lb-btn prev" type="button" aria-label="Image précédente">
+            ←
+          </button>
+          <button class="lb-btn next" type="button" aria-label="Image suivante">
+            →
+          </button>
+        </>
+      )
+    }
+  </dialog>
+</div>
+
+<script>
+  function bindGalleries() {
+    document.querySelectorAll<HTMLElement>('[data-gallery]:not([data-bound])').forEach((g) => {
+      g.dataset.bound = '1';
+      const items = [...g.querySelectorAll<HTMLAnchorElement>('.item')];
+      const dlg = g.querySelector('dialog')!;
+      const img = dlg.querySelector('img')!;
+      const cap = dlg.querySelector('.caption')!;
+      let index = 0;
+      const show = (i: number) => {
+        index = (i + items.length) % items.length;
+        const it = items[index];
+        img.src = it.dataset.full!;
+        img.alt = it.dataset.alt ?? '';
+        cap.textContent = `${index + 1} / ${items.length} — ${it.dataset.alt ?? ''}`;
+      };
+      items.forEach((it, i) =>
+        it.addEventListener('click', (e) => {
+          e.preventDefault();
+          show(i);
+          dlg.showModal();
+        }),
+      );
+      dlg.querySelector('.close')?.addEventListener('click', () => dlg.close());
+      dlg.querySelector('.prev')?.addEventListener('click', () => show(index - 1));
+      dlg.querySelector('.next')?.addEventListener('click', () => show(index + 1));
+      dlg.addEventListener('click', (e) => {
+        if (e.target === dlg) dlg.close();
+      });
+      dlg.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') show(index - 1);
+        if (e.key === 'ArrowRight') show(index + 1);
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', bindGalleries);
+</script>
+
+<style>
+  .gallery {
+    columns: 3 240px;
+    column-gap: 1rem;
+  }
+  .gallery.single {
+    columns: auto;
+    max-width: 900px;
+  }
+  .item {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+  }
+  .item :global(img) {
+    width: 100%;
+    transition: transform 0.8s var(--ease);
+  }
+  .contain .item :global(img) {
+    padding: 8%;
+  }
+  .item:hover :global(img) {
+    transform: scale(1.03);
+  }
+  .lightbox {
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 3.5rem 1rem 3rem;
+    border: 0;
+    background: rgb(5 5 6 / 0.94);
+    color: #fff;
+  }
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+  .lightbox::backdrop {
+    background: transparent;
+  }
+  .lightbox img {
+    max-width: min(100%, 1400px);
+    max-height: calc(100dvh - 7rem);
+    object-fit: contain;
+  }
+  .caption {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 90vw;
+    color: rgb(255 255 255 / 0.7);
+    text-align: center;
+  }
+  .lb-btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.25);
+    background: rgb(0 0 0 / 0.4);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .lb-btn:hover {
+    background: rgb(255 255 255 / 0.15);
+  }
+  .close {
+    top: 1rem;
+    right: 1rem;
+  }
+  .prev {
+    left: 1rem;
+    top: 50%;
+  }
+  .next {
+    right: 1rem;
+    top: 50%;
+  }
+</style>

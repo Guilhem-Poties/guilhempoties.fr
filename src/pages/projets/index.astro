@@ -1,0 +1,149 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import DisciplineIcon from '../../components/DisciplineIcon.astro';
+import { getProjects, countByDiscipline, disciplines, type Discipline } from '../../lib/projects';
+
+const projects = await getProjects();
+const counts = countByDiscipline(projects);
+const keys = (Object.keys(disciplines) as Discipline[]).filter((d) => counts[d] > 0);
+---
+
+<Base
+  title="Créations"
+  description="Toutes les créations de Guilhem Poties : code, cinéma, vidéo, graphisme, musique, scène et écriture."
+>
+  <section class="container head">
+    <p class="eyebrow mono">Créations · 2015 — {new Date().getFullYear()}</p>
+    <h1 class="title">Tout ce que j'ai pu produire de créatif et de technique.</h1>
+  </section>
+
+  <section class="container">
+    <div class="filters" role="group" aria-label="Filtrer par discipline">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">
+        Tout <span class="mono">{projects.length}</span>
+      </button>
+      {
+        keys.map((d) => (
+          <button type="button" class="filter" data-filter={d} aria-pressed="false">
+            <DisciplineIcon discipline={d} size={18} />
+            {disciplines[d].label} <span class="mono">{counts[d]}</span>
+          </button>
+        ))
+      }
+    </div>
+    <p class="status sr-only" aria-live="polite"></p>
+
+    <div class="grid" id="grid">
+      {projects.map((p, i) => <ProjectCard project={p} headingLevel={2} eager={i < 3} />)}
+    </div>
+  </section>
+</Base>
+
+<script>
+  function initFilters() {
+    const root = document.getElementById('grid');
+    if (!root) return;
+    const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filter')];
+    const cards = [...root.querySelectorAll<HTMLElement>('.card')];
+    const status = document.querySelector('.status');
+
+    const apply = (key: string, push = true) => {
+      if (!buttons.some((b) => b.dataset.filter === key)) key = 'all';
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === key)));
+      let n = 0;
+      cards.forEach((c) => {
+        const show = key === 'all' || (c.dataset.disciplines ?? '').split(' ').includes(key);
+        c.hidden = !show;
+        if (show) n++;
+      });
+      if (status) status.textContent = `${n} projet${n > 1 ? 's' : ''} affiché${n > 1 ? 's' : ''}`;
+      if (push) {
+        const url = new URL(location.href);
+        if (key === 'all') url.searchParams.delete('d');
+        else url.searchParams.set('d', key);
+        history.replaceState(history.state, '', url);
+      }
+    };
+
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? 'all')));
+    apply(new URL(location.href).searchParams.get('d') ?? 'all', false);
+  }
+  document.addEventListener('astro:page-load', initFilters);
+</script>
+
+<style>
+  .head {
+    padding-top: clamp(3rem, 8vw, 6rem);
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .title {
+    font-size: clamp(2.3rem, 1.2rem + 4.5vw, 5.5rem);
+    letter-spacing: -0.045em;
+    max-width: 16ch;
+  }
+  .filters {
+    position: sticky;
+    top: 4rem;
+    z-index: 10;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-block: 1rem;
+    margin-bottom: 1.5rem;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: none;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+  }
+  .filter:hover {
+    border-color: var(--line-strong);
+  }
+  .filter span {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  .filter[aria-pressed='true'] span {
+    color: inherit;
+    opacity: 0.7;
+  }
+  .filter[aria-pressed='true'] :global(.icon-img) {
+    filter: var(--icon-filter) invert(1);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: clamp(2rem, 3vw, 2.75rem) clamp(1rem, 2vw, 1.75rem);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+  .grid > :global([hidden]) {
+    display: none;
+  }
+</style>

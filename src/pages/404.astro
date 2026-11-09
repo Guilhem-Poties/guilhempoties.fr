@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page introuvable">
+  <section class="container wrap">
+    <p class="eyebrow mono">Erreur 404</p>
+    <h1>Cette page a coupé au montage.</h1>
+    <p class="muted">Elle n'existe pas ou plus. Les anciennes adresses du site ont été redirigées, mais certaines ont pu m'échapper.</p>
+    <div class="ctas">
+      <a class="btn btn-primary" href="/">Retour à l'accueil</a>
+      <a class="btn" href="/projets/">Voir les créations</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .wrap {
+    padding-block: clamp(5rem, 14vw, 10rem);
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 1.2rem + 5vw, 6rem);
+    letter-spacing: -0.045em;
+    max-width: 14ch;
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+</style>
