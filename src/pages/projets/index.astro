@@ -135,7 +135,7 @@ const keys = (Object.keys(disciplines) as Discipline[]).filter((d) => counts[d] 
     opacity: 0.7;
   }
   .filter[aria-pressed='true'] :global(.icon-img) {
-    filter: var(--icon-filter) invert(1);
+    filter: invert(1);
   }
   .grid {
     display: grid;

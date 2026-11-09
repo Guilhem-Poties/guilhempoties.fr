@@ -3,7 +3,7 @@
 Portfolio de Guilhem Poties — ingénieur créatif (IMAC, ESIEE Paris).
 
 Site statique généré avec [Astro](https://astro.build) : pas de base de données, pas de framework JS côté client, des
-images optimisées automatiquement (WebP, tailles responsives) et un thème clair/sombre.
+images optimisées automatiquement (WebP, tailles responsives) et un thème sombre unique.
 
 ## Développement
 

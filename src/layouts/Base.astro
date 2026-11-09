@@ -42,8 +42,7 @@ const personLd = {
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f4f2ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0d" />
 
     <meta property="og:type" content={type} />
     <meta property="og:locale" content="fr_FR" />
@@ -57,17 +56,9 @@ const personLd = {
     <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
 
     <script is:inline>
-      // Theme + JS flag before first paint (no flash). Re-applied after each client-side navigation.
-      (function () {
-        const apply = (doc) => {
-          let t = null;
-          try { t = localStorage.getItem('theme'); } catch (e) {}
-          if (t === 'light' || t === 'dark') doc.documentElement.dataset.theme = t;
-          doc.documentElement.classList.add('js');
-        };
-        apply(document);
-        document.addEventListener('astro:before-swap', (e) => apply(e.newDocument));
-      })();
+      // JS flag before first paint (enables scroll reveals). Re-applied after each client-side navigation.
+      document.documentElement.classList.add('js');
+      document.addEventListener('astro:before-swap', (e) => e.newDocument.documentElement.classList.add('js'));
     </script>
     <ClientRouter fallback="swap" />
   </head>

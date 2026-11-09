@@ -15,7 +15,6 @@
   --accent: #ff5a2c;
   --accent-ink: #ff7a52;
   --on-accent: #0b0b0d;
-  --icon-filter: none;
 
   --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
@@ -25,37 +24,6 @@
   --max: 1320px;
   --radius: 14px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme='dark']) {
-    color-scheme: light;
-    --bg: #f4f2ec;
-    --surface: #ffffff;
-    --surface-2: #ebe8e0;
-    --text: #141414;
-    --muted: #5d5a53;
-    --line: rgb(0 0 0 / 0.1);
-    --line-strong: rgb(0 0 0 / 0.25);
-    --accent: #e8471a;
-    --accent-ink: #b8360f;
-    --on-accent: #ffffff;
-    --icon-filter: invert(1);
-  }
-}
-:root[data-theme='light'] {
-  color-scheme: light;
-  --bg: #f4f2ec;
-  --surface: #ffffff;
-  --surface-2: #ebe8e0;
-  --text: #141414;
-  --muted: #5d5a53;
-  --line: rgb(0 0 0 / 0.1);
-  --line-strong: rgb(0 0 0 / 0.25);
-  --accent: #e8471a;
-  --accent-ink: #b8360f;
-  --on-accent: #ffffff;
-  --icon-filter: invert(1);
 }
 
 /* ───────────────────────── Base ───────────────────────── */
@@ -270,7 +238,6 @@ a:hover {
 }
 
 .icon-img {
-  filter: var(--icon-filter);
   object-fit: contain;
 }
 
